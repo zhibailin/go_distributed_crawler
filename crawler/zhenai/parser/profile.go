@@ -14,7 +14,7 @@ import (
 var ageRex = regexp.MustCompile(`<td><span class="label">年龄：</span>(\d+)岁</td>`)
 var marriageRex = regexp.MustCompile(`<td><span class="label">婚况：</span>([^>]+)</td>`)
 
-func ParseProfile(contents []byte) engine.ParseResult {
+func ParseProfile(contents []byte, name string) engine.ParseResult {
 
 	// 跳过反反爬的处理，除了用户名，其他字段统一用固定值填充
 	// 整数型字段的处理
@@ -26,6 +26,7 @@ func ParseProfile(contents []byte) engine.ParseResult {
 	fmt.Println(extractString(contents, marriageRex))
 
 	profile := model.Profile{
+		Name:       name,
 		Age:        34,
 		Height:     162,
 		Weight:     57,

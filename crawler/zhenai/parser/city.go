@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/engine"
@@ -14,11 +13,13 @@ func ParseCity(contents []byte) engine.ParseResult {
 	matches := re.FindAllSubmatch(contents, -1)
 	result := engine.ParseResult{}
 	for _, m := range matches {
-		fmt.Printf("User nick name: %s, URL: %s\n", m[2], m[1])
-		result.Items = append(result.Items, string(m[2]))
+		name := string(m[2])
+		result.Items = append(result.Items, "User Nick Name "+name)
 		result.Requests = append(result.Requests, engine.Request{
-			Url:       string(m[1]),
-			ParseFunc: ParseProfile,
+			Url: string(m[1]),
+			ParseFunc: func(c []byte) engine.ParseResult {
+				return ParseProfile(c, name)
+			},
 		})
 	}
 	return result
