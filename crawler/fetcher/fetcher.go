@@ -12,18 +12,27 @@ import (
 	"golang.org/x/text/transform"
 )
 
+const UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
+
 func Fetch(url string) ([]byte, error) {
-	resp, err := http.Get(url)
+	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
+	request.Header.Add("User-Agent", UserAgent)
+	resp, err := http.DefaultClient.Do(request)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer func() {
 		_ = resp.Body.Close()
 	}()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusAccepted {
 		return nil, fmt.Errorf("wrong: status code: %d", resp.StatusCode)
 	}
+
 	bodyReader := bufio.NewReader(resp.Body)
 	e := determineEncoding(bodyReader)
 

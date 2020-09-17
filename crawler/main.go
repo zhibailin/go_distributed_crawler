@@ -7,7 +7,7 @@ import (
 
 func main() {
 	engine.Run(engine.Request{
-		Url:       "http://www.zhenai.com/zhenghun",
-		ParseFunc: parser.ParseCityList,
+		Url:       "http://www.zhenai.com/zhenghun/shanghai",
+		ParseFunc: parser.ParseCity,
 	})
 }
