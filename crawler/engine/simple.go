@@ -4,7 +4,10 @@ import (
 	"log"
 )
 
-func Run(seeds ...Request) {
+type SimpleEngine struct {
+}
+
+func (s SimpleEngine) Run(seeds ...Request) {
 	var requests []Request
 	requests = append(requests, seeds...)
 
