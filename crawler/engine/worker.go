@@ -17,10 +17,11 @@ func Worker(r Request) (ParseResult, error) {
 	return r.ParseFunc(body), nil
 }
 
-func NewWorker(in chan Request, out chan ParseResult) {
+func NewWorker(out chan ParseResult, s Scheduler) {
+	in := make(chan Request)
 	go func() {
 		for {
-			// 设有 10个 worker（goroutine）并发执行下面的语句，可能最后都忙于没有 out，没人接收in，卡死
+			s.WorkerReady(in)
 			request := <-in
 			result, err := Worker(request)
 			if err != nil {
