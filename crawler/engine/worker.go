@@ -16,3 +16,16 @@ func Worker(r Request) (ParseResult, error) {
 	}
 	return r.ParseFunc(body), nil
 }
+
+func NewWorker(in chan Request, out chan ParseResult) {
+	go func() {
+		for {
+			request := <-in
+			result, err := Worker(request)
+			if err != nil {
+				continue
+			}
+			out <- result
+		}
+	}()
+}
