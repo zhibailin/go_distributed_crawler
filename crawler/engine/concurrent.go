@@ -2,14 +2,19 @@ package engine
 
 import (
 	"log"
-
-	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/scheduler"
 )
 
 // 实现一个 ConcurrentEngine "类"
 type ConcurrentEngine struct {
-	Scheduler   scheduler.Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
-	WorkerCount int                 // 指定并发的 worker 数量
+	Scheduler   Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
+	WorkerCount int       // 指定并发的 worker 数量
+}
+
+// Scheduler interface 放这里，具体实现放 scheduler.go
+// 且避免与 scheduler.go 发送 import cycle 问题
+type Scheduler interface {
+	ConfigureWorkerChan(chan Request) // 好比 Python 中的构造函数 __init__
+	Submit(Request)
 }
 
 func (e *ConcurrentEngine) Run(seeds ...Request) {
