@@ -8,6 +8,7 @@ import (
 type ConcurrentEngine struct {
 	Scheduler   Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
 	WorkerCount int       // 指定并发的 worker 数量
+	ItemChan    chan interface{}
 }
 
 type Scheduler interface {
@@ -39,12 +40,14 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		e.Scheduler.Submit(r)
 	}
 
+	// 处理 output，存储
 	for {
 		result := <-out
 		for _, item := range result.Items {
 			log.Printf("Got item : %v", item)
 			// save item
-			go func() { itemChan <- item }()
+			// 存储过程也是耗时的，为每个 item 的存储操作开 goroutine
+			go func() { e.ItemChan <- item }()
 		}
 		for _, request := range result.Requests {
 			if isDuplicate(request.Url) {
