@@ -33,6 +33,9 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	}
 	// engine 令 Scheduler 向 管道 提交 requests
 	for _, r := range seeds {
+		if isDuplicate(r.Url) {
+			continue
+		}
 		e.Scheduler.Submit(r)
 	}
 
@@ -42,7 +45,20 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 			log.Printf("Got item : %v", item)
 		}
 		for _, request := range result.Requests {
+			if isDuplicate(request.Url) {
+				continue
+			}
 			e.Scheduler.Submit(request)
 		}
 	}
+}
+
+var visitedUrl = make(map[string]bool)
+
+func isDuplicate(url string) bool {
+	if visitedUrl[url] {
+		return true
+	}
+	visitedUrl[url] = true
+	return false
 }
