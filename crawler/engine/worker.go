@@ -17,11 +17,11 @@ func Worker(r Request) (ParseResult, error) {
 	return r.ParseFunc(body), nil
 }
 
-func NewWorker(out chan ParseResult, s Scheduler) {
-	in := make(chan Request)
+func NewWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
+
 	go func() {
 		for {
-			s.WorkerReady(in)
+			ready.WorkerReady(in)
 			request := <-in
 			result, err := Worker(request)
 			if err != nil {

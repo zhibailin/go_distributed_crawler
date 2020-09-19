@@ -6,8 +6,15 @@ type SimpleScheduler struct {
 	workerChan chan engine.Request
 }
 
-func (s *SimpleScheduler) ConfigureWorkerChan(c chan engine.Request) {
-	s.workerChan = c
+func (s *SimpleScheduler) WorkerReady(requests chan engine.Request) {
+}
+
+func (s *SimpleScheduler) WorkerChan() chan engine.Request {
+	return s.workerChan
+}
+
+func (s *SimpleScheduler) Run() {
+	s.workerChan = make(chan engine.Request)
 }
 
 func (s *SimpleScheduler) Submit(request engine.Request) {
@@ -21,8 +28,8 @@ type QueueScheduler struct {
 	workerChan  chan chan engine.Request
 }
 
-func (s *QueueScheduler) ConfigureWorkerChan(requests chan engine.Request) {
-	panic("implement me")
+func (s *QueueScheduler) WorkerChan() chan engine.Request {
+	return make(chan engine.Request)
 }
 
 func (s *QueueScheduler) WorkerReady(w chan engine.Request) {
