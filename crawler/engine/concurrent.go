@@ -43,6 +43,8 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 		result := <-out
 		for _, item := range result.Items {
 			log.Printf("Got item : %v", item)
+			// save item
+			go func() { itemChan <- item }()
 		}
 		for _, request := range result.Requests {
 			if isDuplicate(request.Url) {
