@@ -15,5 +15,5 @@ func ItemSaver() chan interface{} {
 			itemCount++
 		}
 	}()
-	return out
+	return out // TODO: 返回出去的 out 和 go func() 里的 out 是什么关系
 }
