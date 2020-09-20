@@ -1,6 +1,6 @@
 package engine
 
-type ParseFunc func(contents []byte, url, id, name string) ParseResult
+type ParseFunc func(contents []byte, url string) ParseResult // // ParseFunc 是公共函数，url 可能被所有的 parser 用到，提出来
 
 type Request struct {
 	Url       string
