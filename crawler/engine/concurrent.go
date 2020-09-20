@@ -8,7 +8,7 @@ import (
 type ConcurrentEngine struct {
 	Scheduler   Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
 	WorkerCount int       // 指定并发的 worker 数量
-	ItemChan    chan interface{}
+	ItemChan    chan Item
 }
 
 type Scheduler interface {
