@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
+
+	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler_distributed/config"
 
 	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler_distributed/rpcsupport"
 
@@ -10,8 +13,7 @@ import (
 )
 
 func main() {
-	log.Fatal(serveRpc(":1234", "dating_profile"))
-
+	log.Fatal(serveRpc(fmt.Sprintf(":%d", config.ItemSaverPort), config.ElasticIndex))
 }
 
 func serveRpc(host, index string) error {
