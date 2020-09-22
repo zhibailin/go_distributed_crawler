@@ -14,7 +14,7 @@ import (
 var ageRex = regexp.MustCompile(`<td><span class="label">年龄：</span>(\d+)岁</td>`)
 var marriageRex = regexp.MustCompile(`<td><span class="label">婚况：</span>([^>]+)</td>`)
 
-func ParseProfile(contents []byte, url string, id string, name string) engine.ParseResult {
+func parseProfile(contents []byte, url string, id string, name string) engine.ParseResult {
 
 	// 跳过反反爬的处理，除了用户名，其他字段统一用固定值填充
 	// 整数型字段的处理
@@ -59,5 +59,26 @@ func extractString(contents []byte, re *regexp.Regexp) string {
 		return string(match[1])
 	} else {
 		return ""
+	}
+}
+
+// ProfileParser 不止传递一个函数名，无法由 NewFuncParser 创建，
+// 需要另外定义一个 Parser interface 的 implementation，
+// 和新的工厂方法 NewProfileParser
+type ProfileParser struct {
+	args map[string]string
+}
+
+func (p *ProfileParser) Parse(contents []byte, url string) engine.ParseResult {
+	return parseProfile(contents, url, p.args["userId"], p.args["userName"])
+}
+
+func (p *ProfileParser) Serialized() (name string, args interface{}) {
+	return "ProfileParser", args
+}
+
+func NewProfileParser(id, name string) *ProfileParser {
+	return &ProfileParser{
+		args: map[string]string{"userId": id, "userName": name},
 	}
 }
