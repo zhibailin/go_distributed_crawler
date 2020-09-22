@@ -34,3 +34,14 @@ func (n NilParser) Serialized() (name string, args interface{}) {
 	return "NilParser", nil
 }
 
+type FuncParser struct {
+	parser ParseFunc
+	name   string
+}
+
+func NewFuncParser(p ParseFunc, name string) *FuncParser {
+	return &FuncParser{
+		parser: p,
+		name:   name,
+	}
+}
