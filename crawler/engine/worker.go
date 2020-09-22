@@ -14,7 +14,7 @@ func Worker(r Request) (ParseResult, error) {
 		log.Printf("Fetcher: errror "+"fetching url %s: %v", r.Url, err)
 		return ParseResult{}, err
 	}
-	return r.ParseFunc(body, r.Url), nil
+	return r.Parser.Parse(body, r.Url), nil
 }
 
 func NewWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
