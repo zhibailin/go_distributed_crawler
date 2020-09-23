@@ -39,3 +39,25 @@ func SerializeResult(r engine.ParseResult) ParseResult {
 	}
 	return result
 }
+
+func DeserializeRequest(r Request) engine.Request {
+	return engine.Request{
+		Url:    r.Url,
+		Parser: deserializeParser(r.Parser),
+	}
+}
+
+func deserializeParser(p SerializedParser) engine.Parser {
+	// 方案一：将每个解析器的名字注册到一个map中
+	// TODO 方案二：用 switch ... case ...
+}
+
+func DeserializeResult(r ParseResult) engine.ParseResult {
+	result := engine.ParseResult{
+		Items: r.Items,
+	}
+	for _, req := range r.Requests {
+		result.Requests = append(result.Requests, DeserializeRequest(req))
+	}
+	return result
+}
