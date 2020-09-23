@@ -1,6 +1,14 @@
 package worker
 
-import "github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/engine"
+import (
+	"errors"
+	"fmt"
+	"log"
+
+	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/engine"
+	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/zhenai/parser"
+	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler_distributed/config"
+)
 
 // 传递函数名和函数参数，序列化出来的是
 // {"ParseCityList", nil}, {"ProfileParser", userId, userName}
@@ -40,16 +48,46 @@ func SerializeResult(r engine.ParseResult) ParseResult {
 	return result
 }
 
-func DeserializeRequest(r Request) engine.Request {
+func DeserializeRequest(r Request) (engine.Request, error) {
+	p, err := deserializeParser(r.Parser)
+	if err != nil {
+		return engine.Request{}, err
+	}
+
 	return engine.Request{
 		Url:    r.Url,
-		Parser: deserializeParser(r.Parser),
-	}
+		Parser: p,
+	}, nil
 }
 
-func deserializeParser(p SerializedParser) engine.Parser {
+func deserializeParser(p SerializedParser) (engine.Parser, error) {
 	// 方案一：将每个解析器的名字注册到一个map中
-	// TODO 方案二：用 switch ... case ...
+	// 方案二：用 switch ... case ...
+	switch p.FunctionName {
+	case config.ParseCityList:
+		return engine.NewFuncParser(parser.ParseCityList, config.ParseCityList), nil
+	case config.ParseCity:
+		return engine.NewFuncParser(parser.ParseCity, config.ParseCity), nil
+	case config.NilParser:
+		return engine.NilParser{}, nil
+	case config.ParseProfile:
+		// 知识点：断言的用法
+		// 无法直接用 p.Args["userId"]，因为 p.Args 是 interface，需要用断言获取具体的 Type map，
+		// 原用 p.Args.(string)
+		if args, ok := p.Args.(map[string]string); ok {
+			userId, idOk := args["userId"]
+			userName, nameOk := args["userName"]
+			if idOk && nameOk {
+				return parser.NewProfileParser(userId, userName), nil
+			} else {
+				return nil, fmt.Errorf("invalid args: %v", p.Args)
+			}
+		} else {
+			return nil, fmt.Errorf("invalid args: %v", p.Args)
+		}
+	default:
+		return nil, errors.New("unknown parser name")
+	}
 }
 
 func DeserializeResult(r ParseResult) engine.ParseResult {
@@ -57,7 +95,12 @@ func DeserializeResult(r ParseResult) engine.ParseResult {
 		Items: r.Items,
 	}
 	for _, req := range r.Requests {
-		result.Requests = append(result.Requests, DeserializeRequest(req))
+		engineReq, err := DeserializeRequest(req)
+		if err != nil {
+			log.Printf("error deserializing request: %v", err)
+			continue
+		}
+		result.Requests = append(result.Requests, engineReq)
 	}
 	return result
 }
