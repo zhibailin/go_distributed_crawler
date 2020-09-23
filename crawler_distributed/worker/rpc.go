@@ -5,9 +5,18 @@ import "github.com/zhibailin/go-distributed-crawler-from-scratch/crawler/engine"
 type CrawlService struct {
 }
 
-func (CrawlService) Process(req engine.Request, result *engine.ParseResult) error {
-	// TODO
-	// engine.Request 在网络上是无法传的，因为里面的 Parser 是 interface，
-	// 里面的各种函数类型无法直接传，因此需要再创建一些能传的类型，
-	// 然后通过序列化函数，将 不能传的类型 转化为 能传的类型
+func (CrawlService) Process(req Request, result *ParseResult) error {
+	// 作为 Service，接收的 Request 是序列化后的，需要反序列化处理，才能传给 engine.Worker 处理
+	engineReq, err := DeserializeRequest(req)
+	if err != nil {
+		return err
+	}
+	engineResult, err := engine.Worker(engineReq)
+	if err != nil {
+		return nil
+	}
+
+	// Worker 处理后的结果，需要序列化才能发出去
+	*result = SerializeResult(engineResult)
+	return nil // 注意指针传递下，只用返回 Type error
 }
