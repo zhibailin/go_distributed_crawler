@@ -31,7 +31,7 @@ func TestCrawlService(t *testing.T) {
 		},
 	}
 	var result worker.ParseResult
-	err = client.Call(config.CrawlServieRpc, req, &result)
+	err = client.Call(config.CrawlServiceRpc, req, &result)
 	if err != nil {
 		t.Error(err)
 	} else {

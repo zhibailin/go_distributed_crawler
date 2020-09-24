@@ -20,7 +20,7 @@ func CreateProcessor(clientChan chan *rpc.Client) engine.Processor {
 		sReq := worker.SerializeRequest(req)
 		var sResult worker.ParseResult
 		client := <-clientChan
-		err := client.Call(config.CrawlServieRpc, sReq, &sResult)
+		err := client.Call(config.CrawlServiceRpc, sReq, &sResult)
 		if err != nil {
 			return engine.ParseResult{}, err
 		}

@@ -24,3 +24,11 @@ RPC 三要素：
 通过组合的方式。
 新建 `Type`，然后添加到 `ConcurrentEngine struct` 中，
 以该 `struct` 为接收者创建 `methods` 供调用。 
+
+### 启动：
+```shell
+go run crawler_distributed/persist/server/main.go --port=1234
+go run crawler_distributed/worker/server/worker.go --port=9000
+go run crawler_distributed/worker/server/worker.go --port=9001
+go run crawler_distributed/main.go --itemsaver_host=":1234" --worker_hosts=":9000,:9001
+```

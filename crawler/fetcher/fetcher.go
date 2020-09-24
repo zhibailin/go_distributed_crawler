@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/zhibailin/go-distributed-crawler-from-scratch/crawler_distributed/config"
+
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/encoding"
 	"golang.org/x/text/transform"
@@ -15,10 +17,11 @@ import (
 
 const UserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36"
 
-var rateLimiter = time.Tick(100 * time.Millisecond)
+var rateLimiter = time.Tick(time.Second / config.Qps)
 
 func Fetch(url string) ([]byte, error) {
 	<-rateLimiter
+	log.Printf("Fetching url %s ", url)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Fatal(err)

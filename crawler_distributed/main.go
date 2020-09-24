@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	itemSaverHost = flag.String("itermsaver_host", "", "item saver host")
+	itemSaverHost = flag.String("itemsaver_host", "", "item saver host")
 	workerHosts   = flag.String("worker_hosts", "", "worker hosts(comma separated)")
 )
 
