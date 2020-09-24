@@ -50,7 +50,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 			log.Printf("Got item : %v", item)
 			// save item
 			// 存储过程也是耗时的，为每个 item 的存储操作开 goroutine
-			go func() { e.ItemChan <- item }()
+			go func(i Item) { e.ItemChan <- i }(item)
 			// item 是一个 interface{}
 			// e.ItemChan 是 接收 interface{} 的 channel，是 persist.ItemSaver() 的return
 		}
