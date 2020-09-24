@@ -9,6 +9,7 @@ const (
 
 	// Service ports
 	ItemSaverPort = 1234
+	WorkerPort0   = 9000
 
 	// ElasticSearch
 	ElasticIndex = "dating_profile"
