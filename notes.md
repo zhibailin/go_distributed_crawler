@@ -18,3 +18,9 @@ RPC 三要素：
 # p87 - 88
 1. Worker RPC Handler : `Worker` 接收 `Request`，返回 `ParseResult`
     1. `Request` 和 `ParseResult` 需要序列化/反序列化
+
+
+### 代码上，如何连接模块，比如 `Engine` 与 `Worker` 如何连接？
+通过组合的方式。
+新建 `Type`，然后添加到 `ConcurrentEngine struct` 中，
+以该 `struct` 为接收者创建 `methods` 供调用。 

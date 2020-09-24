@@ -6,10 +6,13 @@ import (
 
 // 实现一个 ConcurrentEngine "类"
 type ConcurrentEngine struct {
-	Scheduler   Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
-	WorkerCount int       // 指定并发的 worker 数量
-	ItemChan    chan Item
+	Scheduler        Scheduler // "构造函数"，指定该 engine 采用的 Scheduler
+	WorkerCount      int       // 指定并发的 worker 数量
+	ItemChan         chan Item
+	RequestProcessor Processor
 }
+
+type Processor func(Request) (ParseResult, error)
 
 type Scheduler interface {
 	ReadyNotifier
@@ -30,7 +33,7 @@ func (e *ConcurrentEngine) Run(seeds ...Request) {
 	// engine 调用 NewWorker 并发创建 workers，
 	// 并发执行 fetch 和 parse
 	for i := 0; i < e.WorkerCount; i++ {
-		NewWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
+		e.NewWorker(e.Scheduler.WorkerChan(), out, e.Scheduler)
 	}
 	// engine 令 Scheduler 向 管道 提交 requests
 	for _, r := range seeds {

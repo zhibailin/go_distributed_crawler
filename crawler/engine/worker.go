@@ -17,13 +17,13 @@ func Worker(r Request) (ParseResult, error) {
 	return r.Parser.Parse(body, r.Url), nil
 }
 
-func NewWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
+func (e *ConcurrentEngine) NewWorker(in chan Request, out chan ParseResult, ready ReadyNotifier) {
 
 	go func() {
 		for {
 			ready.WorkerReady(in)
 			request := <-in
-			result, err := Worker(request)
+			result, err := e.RequestProcessor(request)
 			if err != nil {
 				continue
 			}
