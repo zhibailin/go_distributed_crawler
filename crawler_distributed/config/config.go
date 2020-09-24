@@ -15,5 +15,6 @@ const (
 	ElasticIndex = "dating_profile"
 
 	// RPC Endpoints/handler
-	ItemSaverRpc = "ItemSaverService.Save"
+	ItemSaverRpc   = "ItemSaverService.Save"
+	CrawlServieRpc = "CrawlService.Process"
 )

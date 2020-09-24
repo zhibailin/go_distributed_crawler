@@ -74,16 +74,16 @@ func deserializeParser(p SerializedParser) (engine.Parser, error) {
 		// 知识点：断言的用法
 		// 无法直接用 p.Args["userId"]，因为 p.Args 是 interface，需要用断言获取具体的 Type map，
 		// 原用 p.Args.(string)
-		if args, ok := p.Args.(map[string]string); ok {
-			userId, idOk := args["userId"]
-			userName, nameOk := args["userName"]
-			if idOk && nameOk {
+		if args, ok := p.Args.(map[string]interface{}); ok {
+			userId, idOk := args["userId"].(string)
+			userName, nameOk := args["userName"].(string)
+			if idOk && nameOk && (userId != "") && (userName != "") {
 				return parser.NewProfileParser(userId, userName), nil
 			} else {
 				return nil, fmt.Errorf("invalid args: %v", p.Args)
 			}
 		} else {
-			return nil, fmt.Errorf("invalid args: %v", p.Args)
+			return nil, fmt.Errorf("type error, invalid args: %v", p.Args)
 		}
 	default:
 		return nil, errors.New("unknown parser name")
